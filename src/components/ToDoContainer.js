@@ -1,7 +1,7 @@
 import React from "react";
 import ToDoItem from "./ToDoItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretUp, faCaretDown } from "@fortawesome/free-solid-svg-icons";
+import { faCaretUp, faCaretDown,faClock } from "@fortawesome/free-solid-svg-icons";
 
 function ToDoContainer({
   todos,
@@ -10,6 +10,7 @@ function ToDoContainer({
   onCompleteTodo,
   sortAscending,
   sortDescending,
+  sortDeadline
 }) {
 
   
@@ -21,7 +22,11 @@ function ToDoContainer({
     sortDescending();
     console.log("sorted desc");
   };
+  const deadlineSorting = () => {
+    sortDeadline();
+  };
 
+  
 
   return (
     <div
@@ -30,6 +35,7 @@ function ToDoContainer({
         flexDirection: "column",
         gap: "10px",
         width: "100%",
+        // height:"100%",
       }}
     >
       <div
@@ -39,7 +45,7 @@ function ToDoContainer({
           justifyContent: "center",
           alignItems: "center",
           color:"black",
-          fontWeight:"bold"
+          fontWeight:"bold",
         }}
       >
         To-do Items
@@ -47,8 +53,9 @@ function ToDoContainer({
           <FontAwesomeIcon icon={faCaretUp} onClick={ascendingSorting} style={{color:"orange"}} />
           <FontAwesomeIcon icon={faCaretDown} onClick={descendingSorting} style={{color:"orange"}} />
         </div>
+        <div> <FontAwesomeIcon icon={faClock} onClick={deadlineSorting}/></div>
       </div>
-      <ul style={{display:"flex",flexDirection:"column",gap:"10px",width:"100%"}}>
+      <ul style={{display:"flex",flexDirection:"column",gap:"10px",width:"100%",}}>
         {todos.map((todo, index) => (
           <ToDoItem
             key={index}

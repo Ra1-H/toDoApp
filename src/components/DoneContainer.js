@@ -19,6 +19,7 @@ function DoneContainer({ todos, sortAscending, sortDescending, onDeleteTodo }) {
         flexDirection: "column",
         gap: "10px",
         width: "100%",
+        // height:"100%",
       }}
     >
       <div

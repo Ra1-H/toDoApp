@@ -26,6 +26,8 @@ function ToDoItem({ todo, onEdit, onDelete,onComplete }) {
     onComplete(todo.id);
   };
 
+  const isDeadlineUrgent = parseInt(todo.deadline) < 4;
+
   return (
     <li className="todo" style={todoStyles}>
       <div
@@ -46,10 +48,10 @@ function ToDoItem({ todo, onEdit, onDelete,onComplete }) {
               gap: "10px",
             }}
           >
-            <div style={{color:"orange"}}>{todo.deadline}</div>
+            <div style={{ color: isDeadlineUrgent ? "red" : "orange" }}>{todo.deadline}</div>
             <div>
               <div style={{ marginTop: "2px" }}>
-                <input type="checkbox" onChange={handleCompleteTodo} />
+                <input type="checkbox" onChange={handleCompleteTodo} checked={todo.completed} />
               </div>
             </div>
           </div>

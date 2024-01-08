@@ -47,7 +47,7 @@ const modalStyles = {
                     onChange={onTitleChange}
                 >
                 </input>
-                <input
+                <textarea
                     id="textInput_space"
                     placeholder="more info..."
                     style={{width:"100%",height:"100%",border:"1px solid black",borderRadius:"10px",padding:"10px"}}
@@ -55,7 +55,7 @@ const modalStyles = {
                     value={textInput}
                     onChange={onTextChange}
                 >
-                </input>
+                </textarea>
             </div>
         
             {/* priority */}

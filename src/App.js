@@ -5,13 +5,13 @@ import SearchTodo from "./components/SearchTodo";
 import { useState, useEffect } from "react";
 import ToDoContainer from "./components/ToDoContainer";
 import DoneContainer from "./components/DoneContainer";
+// import axios from "axios";
 
 function App() {
   const tasXStyles = {
-    width: "100%",
+    // width: "100%",
     backgroundColor: "black",
     borderRadius: "10px",
-    height: "auto",
     color: "orange",
     fontSize: "30px",
     fontWeight: "bold",
@@ -23,15 +23,15 @@ function App() {
   const appStyles = {
     display: "flex",
     flexDirection: "column",
-    width: "100%",
-    height: "100%",
+    width: "100vw",
     backgroundColor: "#242424",
     padding: "10px",
     color: "white",
+    height: "100%",
   };
 
   const [todos, setTodos] = useState([]);
-  const[done,setDone]=useState([]);
+  const [done, setDone] = useState([]);
   // const[moved,setMoved]=useState({})
 
   const [textInput, setTextInput] = useState("");
@@ -71,13 +71,23 @@ function App() {
 
   function handleDelete(todoId) {
     let updatedTodos = todos.filter((todo) => todo.id !== todoId);
-    let updatedDone=done.filter((doneTodo) => doneTodo.id !== todoId);
+    let updatedDone = done.filter((doneTodo) => doneTodo.id !== todoId);
     setTodos(updatedTodos);
     setDone(updatedDone);
   }
 
+  // const handleDelete = async (todoId) => {
+  //   try {
+  //     await axios.delete(`${API_BASE_URL}/${todoId}`);
+  //     setTodos(todos.filter((todo) => todo.id !== todoId));
+  //   } catch (error) {
+  //     console.error("Error deleting todo:", error);
+  //   }
+  // };
+
   function handleEdit(todoId) {
     console.log("edit clicked");
+    openInputForm();
     const todoToEdit = todos.find((todo) => todo.id === todoId);
     console.log(todoToEdit);
     setEditTodo(todoToEdit);
@@ -92,6 +102,67 @@ function App() {
       setSelectedDate(editTodo.selectedDate);
     }
   }, [editTodo]);
+
+  // //seerver
+  // const API_BASE_URL = "http://localhost:3001/notes";
+  // // Function to fetch todos from the server
+
+  // // Function to handle adding/editing todos
+  // const handleAddNote = async () => {
+  //   try {
+  //     if (!titleInput || !priorityInput || !selectedDate) {
+  //       alert("Please fill in the required fields");
+  //       return;
+  //     }
+
+  //     const newTodo = {
+  //       title: titleInput,
+  //       content: textInput,
+  //       priority: priorityInput,
+  //       selectedDate: selectedDate,
+  //       deadline: deadline,
+  //       completed: false,
+  //     };
+
+  //     if (editTodo) {
+  //       // If editTodo is not null, it means we are in edit mode
+  //       await axios.put(`${API_BASE_URL}/${editTodo.id}`, {
+  //         ...editTodo,
+  //         title: titleInput,
+  //         content: textInput,
+  //         priority: priorityInput,
+  //         selectedDate: selectedDate,
+  //         deadline: deadline,
+  //       });
+  //       setEditTodo(null);
+  //     } else {
+  //       // If editTodo is null, it means we are adding a new todo
+  //       await axios.post(API_BASE_URL, newTodo);
+  //       setTodos([...todos, newTodo]);
+  //     }
+
+  //     // Reset form inputs and state
+  //     setTextInput("");
+  //     setTitleInput("");
+  //     setPriorityInput("");
+  //     setSelectedDate("");
+  //   } catch (error) {
+  //     console.error("Error adding/editing todo:", error);
+  //   }
+  // };
+
+  // const fetchTodos = async () => {
+  //   try {
+  //     const response = await axios.get(API_BASE_URL);
+  //     setTodos(response.data);
+  //   } catch (error) {
+  //     console.error("Error fetching todos:", error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchTodos();
+  // }, []);
 
   function handleAddNote(event) {
     if (!titleInput || !priorityInput || !selectedDate) {
@@ -124,7 +195,7 @@ function App() {
       setSelectedDate("");
     } else {
       const newTodo = {
-        id:new Date().getTime(),
+        id: new Date().getTime(),
         title: titleInput,
         content: textInput,
         priority: priorityInput,
@@ -153,11 +224,18 @@ function App() {
   function handleComplete(todoId) {
     const completedTodo = todos.find((todo) => todo.id === todoId);
     completedTodo.completed = !completedTodo.completed;
-    console.log(completedTodo)
+    console.log(completedTodo);
     let updatedTodos = todos.filter((todo) => todo.id !== todoId);
-    setTodos(updatedTodos)
+    setTodos(updatedTodos);
     // setMoved(completedTodo,completed:true)
-    setDone([...done,completedTodo])
+    if (completedTodo.completed) {
+      // If completed, move to Done container
+      setDone([...done, completedTodo]);
+    } else {
+      // If not completed, remove from Done container
+      const updatedDone = done.filter((doneTodo) => doneTodo.id !== todoId);
+      setDone(updatedDone);
+    }
   }
 
   function sortAscending() {
@@ -184,8 +262,41 @@ function App() {
     setIsInputFormOpen(false);
   }
 
+  const deadlineOrdering = () => {
+    const sortedTodos = [...todos].sort((a, b) => {
+      // Assuming the deadlines are in the format "X days"
+      const deadlineA = parseInt(a.deadline);
+      const deadlineB = parseInt(b.deadline);
 
-  
+      return deadlineA - deadlineB;
+    });
+
+    setTodos(sortedTodos);
+  };
+
+  const [filteredTodos, setFilteredTodos] = useState([]);
+  const [filteredDone, setFilteredDone] = useState([]);
+  const [searchInput, setSearchInput] = useState("");
+  const handleSearch = (searchQuery) => {
+    setSearchInput(searchQuery);
+    console.log(searchInput);
+    const filteredTodos = todos.filter(
+      (todo) =>
+        todo.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        todo.content.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    // Filter done based on title and content
+    const filteredDone = done.filter(
+      (doneTodo) =>
+        doneTodo.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        doneTodo.content.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    setFilteredTodos(filteredTodos);
+    setFilteredDone(filteredDone);
+  };
+
   return (
     <div style={appStyles}>
       <div style={tasXStyles}>tasX</div>
@@ -203,7 +314,7 @@ function App() {
         </div>
 
         <div style={{ width: "85%" }}>
-          <SearchTodo />
+          <SearchTodo onSearch={handleSearch} />
         </div>
 
         {isInputFormOpen && (
@@ -231,21 +342,39 @@ function App() {
           gap: "10px",
           justifyContent: "center",
           alignItems: "center",
+          // overflowY:"scroll"
+          height: "100%",
+          overflow: "hidden",
         }}
       >
-        <div style={{ width: "50%", height: "auto", padding: "10px" }}>
+        <div
+          style={{
+            width: "50%",
+            padding: "10px",
+            height: "100%",
+            overflowY: "scroll",
+          }}
+        >
           <ToDoContainer
-            todos={todos}
+            todos={searchInput ? filteredTodos : todos}
             onEditTodo={handleEdit}
             onDeleteTodo={handleDelete}
             onCompleteTodo={handleComplete}
             sortAscending={sortAscending}
             sortDescending={sortDescending}
+            sortDeadline={deadlineOrdering}
           />
         </div>
-        <div style={{ width: "50%", padding: "10px" }}>
+        <div
+          style={{
+            width: "50%",
+            padding: "10px",
+            overflowY: "scroll",
+            height: "100%",
+          }}
+        >
           <DoneContainer
-            todos={done}
+            todos={searchInput ? filteredDone : done}
             sortAscending={sortAscending}
             sortDescending={sortDescending}
             onDeleteTodo={handleDelete}

@@ -23,6 +23,8 @@ function Doneitem({ todo, onEdit, onDelete }) {
     onDelete(todo.id);
   };
 
+  const isDeadlineUrgent = parseInt(todo.deadline) < 4;
+
   return (
     <li className="todo" style={todoStyles}>
       <div
@@ -43,7 +45,9 @@ function Doneitem({ todo, onEdit, onDelete }) {
               gap: "10px",
             }}
           >
-            <div style={{ color: "orange" }}>{todo.deadline}</div>
+            <div style={{ color: isDeadlineUrgent ? "red" : "orange" }}>
+              {todo.deadline}
+            </div>
             <div>
               <div style={{ marginTop: "2px" }}>
                 <input type="checkbox" checked="true" />
@@ -59,7 +63,11 @@ function Doneitem({ todo, onEdit, onDelete }) {
             alignItems: "center",
           }}
         >
-          <p>{todo.content}</p>
+          <p
+            style={{ textDecoration: todo.completed ? "line-through" : "none" }}
+          >
+            {todo.content}
+          </p>
           <div
             style={{
               display: "flex",

@@ -29,6 +29,6 @@ code {
   justify-content: center;
   align-items: center;
   gap:20px;
-  height:100vh;
+  height:100%;
   width:100%;
 }
